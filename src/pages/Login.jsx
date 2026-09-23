@@ -1,0 +1,78 @@
+import { Utensils } from 'lucide-react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+
+export default function Login() {
+  const [email, setEmail] = useState('admin@restaurantos.com');
+  const [pass, setPass] = useState('admin123');
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const result = login(email, pass);
+    setLoading(false);
+    if (result.ok) {
+      toast('¡Bienvenido al sistema! ', 'success');
+      navigate('/negocios');
+    } else {
+      toast(result.error, 'error');
+    }
+  };
+
+  return (
+    <div className="login-page">
+      <div className="login-bg" />
+      <div className="login-card">
+        <div className="login-logo">
+          <div className="login-logo-icon"><Utensils size={48} /></div>
+          <h1 className="login-title">RestaurantOS</h1>
+          <p className="login-sub">Sistema de Gestión Gastronómica</p>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@restaurantos.com"
+              required
+              id="login-email"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Contraseña</label>
+            <input
+              type="password"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
+              placeholder="••••••••"
+              required
+              id="login-password"
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn btn-primary btn-lg w-full"
+            disabled={loading}
+            id="login-submit"
+            style={{ marginTop: 8 }}
+          >
+            {loading ? '⏳ Ingresando...' : '🔐 Ingresar al Sistema'}
+          </button>
+        </form>
+        <div style={{ marginTop: 20, padding: 14, background: 'var(--bg-elevated)', borderRadius: 'var(--radius-sm)', fontSize: 12, color: 'var(--text-muted)' }}>
+          <strong style={{ color: 'var(--text-secondary)' }}>Demo:</strong><br />
+          Email: admin@restaurantos.com<br />
+          Password: admin123
+        </div>
+      </div>
+    </div>
+  );
+}
