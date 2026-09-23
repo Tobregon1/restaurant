@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@restaurantos.com');
+  const [username, setUsername] = useState('admin');
   const [pass, setPass] = useState('admin123');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -15,7 +15,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const result = login(email, pass);
+    const result = login(username, pass);
     setLoading(false);
     if (result.ok) {
       toast('¡Bienvenido al sistema! ', 'success');
@@ -36,14 +36,14 @@ export default function Login() {
         </div>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="form-group">
-            <label className="form-label">Email</label>
+            <label className="form-label">Nombre de Usuario</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@restaurantos.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="admin"
               required
-              id="login-email"
+              id="login-username"
             />
           </div>
           <div className="form-group">
@@ -69,7 +69,7 @@ export default function Login() {
         </form>
         <div style={{ marginTop: 20, padding: 14, background: 'var(--bg-elevated)', borderRadius: 'var(--radius-sm)', fontSize: 12, color: 'var(--text-muted)' }}>
           <strong style={{ color: 'var(--text-secondary)' }}>Demo:</strong><br />
-          Email: admin@restaurantos.com<br />
+          Usuario: admin<br />
           Password: admin123
         </div>
       </div>

@@ -260,19 +260,19 @@ export const initialInventario = {
 // ── Empleados ──────────────────────────────────────────────
 export const initialEmpleados = {
   'neg-001': [
-    { id: 'emp1', nombre: 'Carlos Ruiz', rol: 'Mozo', email: 'carlos@mail.com', telefono: '11-1111-2222', activo: true, turno: 'Noche' },
-    { id: 'emp2', nombre: 'Ana Gómez', rol: 'Mozo', email: 'ana@mail.com', telefono: '11-3333-4444', activo: true, turno: 'Tarde' },
-    { id: 'emp3', nombre: 'Pedro Martín', rol: 'Cocinero', email: 'pedro@mail.com', telefono: '11-5555-6666', activo: true, turno: 'Noche' },
-    { id: 'emp4', nombre: 'Lucía Fernández', rol: 'Cajero', email: 'lucia@mail.com', telefono: '11-7777-8888', activo: true, turno: 'Tarde' },
+    { id: 'emp1', nombre: 'Carlos Ruiz', rol: 'Mozo', username: 'carlos', password: '123', telefono: '11-1111-2222', activo: true, turno: 'Noche' },
+    { id: 'emp2', nombre: 'Ana Gómez', rol: 'Mozo', username: 'ana', password: '123', telefono: '11-3333-4444', activo: true, turno: 'Tarde' },
+    { id: 'emp3', nombre: 'Pedro Martín', rol: 'Cocinero', username: 'pedro', password: '123', telefono: '11-5555-6666', activo: true, turno: 'Noche' },
+    { id: 'emp4', nombre: 'Lucía Fernández', rol: 'Cajero', username: 'lucia', password: '123', telefono: '11-7777-8888', activo: true, turno: 'Tarde' },
   ],
   'neg-002': [
-    { id: 'emp1', nombre: 'Martín López', rol: 'Bartender', email: 'martin@mail.com', telefono: '11-9999-0000', activo: true, turno: 'Noche' },
-    { id: 'emp2', nombre: 'Valentina Cruz', rol: 'Mozo', email: 'vale@mail.com', telefono: '11-1234-5678', activo: true, turno: 'Noche' },
+    { id: 'emp1', nombre: 'Martín López', rol: 'Bartender', username: 'martin', password: '123', telefono: '11-9999-0000', activo: true, turno: 'Noche' },
+    { id: 'emp2', nombre: 'Valentina Cruz', rol: 'Mozo', username: 'vale', password: '123', telefono: '11-1234-5678', activo: true, turno: 'Noche' },
   ],
   'neg-003': [
-    { id: 'emp1', nombre: 'Sofía Torres', rol: 'Mozo', email: 'sofia@mail.com', telefono: '11-2345-6789', activo: true, turno: 'Noche' },
-    { id: 'emp2', nombre: 'Diego Sánchez', rol: 'Cocinero', email: 'diego@mail.com', telefono: '11-3456-7890', activo: true, turno: 'Noche' },
-    { id: 'emp3', nombre: 'Paula Ríos', rol: 'Gerente', email: 'paula@mail.com', telefono: '11-4567-8901', activo: true, turno: 'Noche' },
+    { id: 'emp1', nombre: 'Sofía Torres', rol: 'Mozo', username: 'sofia', password: '123', telefono: '11-2345-6789', activo: true, turno: 'Noche' },
+    { id: 'emp2', nombre: 'Diego Sánchez', rol: 'Cocinero', username: 'diego', password: '123', telefono: '11-3456-7890', activo: true, turno: 'Noche' },
+    { id: 'emp3', nombre: 'Paula Ríos', rol: 'Gerente', username: 'paula', password: '123', telefono: '11-4567-8901', activo: true, turno: 'Noche' },
   ],
 };
 
@@ -325,7 +325,7 @@ export const initialVentas = {
 export const superAdmin = {
   id: 'sa-001',
   nombre: 'Administrador',
-  email: 'admin@restaurantos.com',
+  username: 'admin',
   password: 'admin123',
   rol: 'superadmin',
 };

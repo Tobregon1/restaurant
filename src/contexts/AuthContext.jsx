@@ -13,9 +13,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (email, password) => {
+  const login = (username, password) => {
     // Mock auth — replace with API call when backend is ready
-    if (email === superAdmin.email && password === superAdmin.password) {
+    if (username === superAdmin.username && password === superAdmin.password) {
       const u = { ...superAdmin, password: undefined };
       setUser(u);
       localStorage.setItem('ros_user', JSON.stringify(u));

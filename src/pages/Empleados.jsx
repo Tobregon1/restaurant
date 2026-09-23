@@ -5,7 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import { Modal, EmptyState, Toggle } from '../components/shared/UI';
 import { ROLES_EMPLEADO } from '../data/mockData';
 
-const defaultEmp = { nombre: '', rol: 'Mozo', email: '', telefono: '', activo: true, turno: 'Noche' };
+const defaultEmp = { nombre: '', rol: 'Mozo', username: '', password: '', telefono: '', activo: true, turno: 'Noche' };
 const TURNOS = ['Mañana', 'Tarde', 'Noche', 'Split'];
 
 export default function Empleados() {
@@ -99,7 +99,7 @@ export default function Empleados() {
                 <Toggle checked={emp.activo} onChange={(v) => actualizarEmpleado(emp.id, { activo: v })} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 14 }}>
-                {emp.email && <div>📧 {emp.email}</div>}
+                {emp.username && <div><User size={12} style={{marginRight: 4, verticalAlign: 'middle'}}/> {emp.username}</div>}
                 {emp.telefono && <div>📱 {emp.telefono}</div>}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -139,12 +139,18 @@ export default function Empleados() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Email</label>
-              <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} id="emp-email" />
+              <label className="form-label">Usuario</label>
+              <input type="text" value={form.username || ''} onChange={(e) => set('username', e.target.value)} id="emp-username" />
             </div>
             <div className="form-group">
+              <label className="form-label">Contraseña</label>
+              <input type="password" value={form.password || ''} onChange={(e) => set('password', e.target.value)} id="emp-password" />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
               <label className="form-label">Teléfono</label>
-              <input value={form.telefono} onChange={(e) => set('telefono', e.target.value)} id="emp-tel" />
+              <input value={form.telefono || ''} onChange={(e) => set('telefono', e.target.value)} id="emp-tel" />
             </div>
           </div>
           <div className="toggle-row">
