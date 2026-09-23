@@ -13,15 +13,29 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (username, password) => {
-    // Mock auth — replace with API call when backend is ready
-    if (username === superAdmin.username && password === superAdmin.password) {
-      const u = { ...superAdmin, password: undefined };
-      setUser(u);
-      localStorage.setItem('ros_user', JSON.stringify(u));
+  const login = async (username, password) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { ok: false, error: data.error || 'Credenciales incorrectas' };
+      }
+      
+      setUser(data.user);
+      localStorage.setItem('ros_token', data.token);
+      localStorage.setItem('ros_user', JSON.stringify(data.user));
+      
+      if (data.tenant) {
+        localStorage.setItem('ros_tenant', JSON.stringify(data.tenant));
+      }
       return { ok: true };
+    } catch (error) {
+      return { ok: false, error: 'Error de red. Asegúrate de que el servidor esté corriendo.' };
     }
-    return { ok: false, error: 'Credenciales incorrectas' };
   };
 
   const logout = () => {

@@ -3,8 +3,8 @@
 // Swap API_BASE_URL with your real API endpoint when ready.
 // ============================================================
 
-const API_BASE_URL = null; // Set to 'http://your-api.com/api' when ready
-const USE_MOCK = !API_BASE_URL;
+const API_BASE_URL = 'http://localhost:3001/api';
+const USE_MOCK = false;
 
 // Helper for real API calls
 const request = async (method, endpoint, body = null) => {
@@ -109,12 +109,12 @@ export const negociosService = {
 };
 
 // ── Named services ─────────────────────────────────────────
-export const mesasService = createService('ros_mesas', '/negocios');
-export const reservasService = createService('ros_reservas', '/negocios');
-export const categoriasService = createService('ros_categorias', '/negocios');
-export const menuItemsService = createService('ros_menu_items', '/negocios');
-export const pedidosService = createService('ros_pedidos', '/negocios');
-export const inventarioService = createService('ros_inventario', '/negocios');
-export const empleadosService = createService('ros_empleados', '/negocios');
-export const deliveryService = createService('ros_delivery', '/negocios');
-export const ventasService = createService('ros_ventas', '/negocios');
+export const mesasService = createService('ros_mesas', '/mesas');
+export const reservasService = createService('ros_reservas', '/reservas');
+export const categoriasService = createService('ros_categorias', '/categorias');
+export const menuItemsService = createService('ros_menu_items', '/menu_items');
+export const pedidosService = createService('ros_pedidos', '/pedidos');
+export const inventarioService = createService('ros_inventario', '/inventario');
+export const empleadosService = createService('ros_empleados', '/empleados');
+export const deliveryService = createService('ros_delivery', '/delivery');
+export const ventasService = createService('ros_ventas', '/ventas');

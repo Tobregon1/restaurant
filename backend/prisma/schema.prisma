@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id            String      @id @default(uuid())
+  nombre        String
+  tipo          String
+  color         String      @default("#f59e0b")
+  direccion     String?
+  telefono      String?
+  email         String?
+  horarios      String?
+  costoDelivery Float       @default(0)
+  iva           Float       @default(21)
+  activo        Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  empleados     Empleado[]
+  mesas         Mesa[]
+  categorias    Categoria[]
+  pedidos       Pedido[]
+}
+
+model Empleado {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nombre      String
+  rol         String
+  username    String   @unique
+  password    String
+  telefono    String?
+  turno       String?
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Mesa {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  numero      Int
+  capacidad   Int
+  estado      String   @default("libre") // libre, ocupada, reservada
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pedidos     Pedido[]
+}
+
+model Categoria {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nombre      String
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       MenuItem[]
+}
+
+model MenuItem {
+  id          String    @id @default(uuid())
+  categoriaId String
+  categoria   Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+  nombre      String
+  precio      Float
+  descripcion String?
+  disponible  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  orderItems  OrderItem[]
+}
+
+model Pedido {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  mesaId      String?
+  mesa        Mesa?    @relation(fields: [mesaId], references: [id], onDelete: SetNull)
+  tipo        String   // salon, delivery, retiro
+  estado      String   @default("nuevo") // nuevo, en_cocina, listo, entregado, cancelado
+  cliente     String?
+  telefono    String?
+  direccion   String?
+  repartidor  String?
+  notas       String?
+  total       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  pedidoId    String
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  cantidad    Int      @default(1)
+  precioUnit  Float
+  subtotal    Float
+  notas       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
