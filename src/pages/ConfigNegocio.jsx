@@ -1,4 +1,4 @@
-import { Settings, Bike, Building, BadgeDollarSign } from 'lucide-react';
+import { Settings, Bike, Building, BadgeDollarSign, Phone, Palette, CreditCard } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
@@ -36,11 +36,11 @@ export default function ConfigNegocio() {
   };
 
   const sections = [
-    { id: 'general', label: <><Building size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> General</>, icon: 'Building' },
-    { id: 'contacto', label: '📞 Contacto', icon: '📞' },
-    { id: 'apariencia', label: '🎨 Apariencia', icon: '🎨' },
-    { id: 'delivery', label: <><Bike size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Delivery</>, icon: 'Bike' },
-    { id: 'pagos', label: '💳 Pagos & Fiscal', icon: '💳' },
+    { id: 'general', label: 'General', icon: <Building size={16} /> },
+    { id: 'contacto', label: 'Contacto', icon: <Phone size={16} /> },
+    { id: 'apariencia', label: 'Apariencia', icon: <Palette size={16} /> },
+    { id: 'delivery', label: 'Delivery', icon: <Bike size={16} /> },
+    { id: 'pagos', label: 'Pagos & Fiscal', icon: <CreditCard size={16} /> },
   ];
 
   return (
@@ -62,7 +62,7 @@ export default function ConfigNegocio() {
               className={`nav-item${section === s.id ? ' active' : ''}`}
               onClick={() => setSection(s.id)}
             >
-              <span>{s.icon}</span> {s.label.split(' ').slice(1).join(' ')}
+              <span style={{ marginRight: 8, verticalAlign: 'middle' }}>{s.icon}</span> {s.label}
             </div>
           ))}
         </div>
