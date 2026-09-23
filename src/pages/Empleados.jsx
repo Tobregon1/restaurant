@@ -1,4 +1,4 @@
-import { Pencil, User, CheckCircle2 } from 'lucide-react';
+import { Pencil, User, CheckCircle2, Utensils, ChefHat, BadgeDollarSign, Beer, Bike } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';

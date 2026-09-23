@@ -1,4 +1,4 @@
-import { Settings, Bike, Building } from 'lucide-react';
+import { Settings, Bike, Building, BadgeDollarSign } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
