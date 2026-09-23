@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { Modal } from '../components/shared/UI';
 import { TIPOS_NEGOCIO } from '../data/mockData';
 
-const NEGOCIO_ICONS = { Restaurante: [<Utensils size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Bar: [<Beer size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Restobar: [<GlassWater size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Cafetería: [<Coffee size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Pizzería: [<Pizza size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Parrilla: [<Beef size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Sushi: [<Fish size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''], Heladería: [<IceCream size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, ''] };
+const NEGOCIO_ICONS = { Restaurante: <Utensils size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Bar: <Beer size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Restobar: <GlassWater size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Cafetería: <Coffee size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Pizzería: <Pizza size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Parrilla: <Beef size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Sushi: <Fish size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, Heladería: <IceCream size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> };
 const ACCENT_COLORS = ['#f59e0b', '#8b5cf6', '#ef4444', '#10b981', '#3b82f6', '#f97316', '#ec4899', '#14b8a6'];
 
 const defaultForm = { nombre: '', tipo: 'Restaurante', color: '#f59e0b', direccion: '', telefono: '', email: '', horarios: '', costoDelivery: 500, iva: 21, activo: true };
@@ -78,10 +78,10 @@ export default function GestionNegocios() {
       {/* Stats */}
       <div className="grid-4" style={{ marginBottom: 24 }}>
         {[
-          { label: 'Total Negocios', value: negocios.length, icon: 'Building' },
-          { label: 'Activos', value: negocios.filter((n) => n.activo).length, icon: 'CheckCircle2' },
-          { label: 'Restaurantes', value: negocios.filter((n) => n.tipo === 'Restaurante').length, icon: 'Utensils' },
-          { label: 'Bares / Restobares', value: negocios.filter((n) => ['Bar', 'Restobar'].includes(n.tipo)).length, icon: 'Beer' },
+          { label: 'Total Negocios', value: negocios.length, icon: <Building /> },
+          { label: 'Activos', value: negocios.filter((n) => n.activo).length, icon: <CheckCircle2 /> },
+          { label: 'Restaurantes', value: negocios.filter((n) => n.tipo === 'Restaurante').length, icon: <Utensils /> },
+          { label: 'Bares / Restobares', value: negocios.filter((n) => ['Bar', 'Restobar'].includes(n.tipo)).length, icon: <Beer /> },
         ].map((s) => (
           <div className="stat-card" key={s.label}>
             <div className="stat-icon">{s.icon}</div>
@@ -212,7 +212,7 @@ export default function GestionNegocios() {
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setModalOpen(false)}>Cancelar</button>
           <button className="btn btn-primary" onClick={handleSave} id="neg-guardar">
-            {editingId ? '💾 Guardar cambios' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Crear Negocio']}
+            {editingId ? '💾 Guardar cambios' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Crear Negocio</>}
           </button>
         </div>
       </Modal>

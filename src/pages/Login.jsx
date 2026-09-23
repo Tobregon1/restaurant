@@ -64,14 +64,9 @@ export default function Login() {
             id="login-submit"
             style={{ marginTop: 8 }}
           >
-            {loading ? '⏳ Ingresando...' : '🔐 Ingresar al Sistema'}
+            {loading ? 'Ingresando...' : 'Ingresar al Sistema'}
           </button>
         </form>
-        <div style={{ marginTop: 20, padding: 14, background: 'var(--bg-elevated)', borderRadius: 'var(--radius-sm)', fontSize: 12, color: 'var(--text-muted)' }}>
-          <strong style={{ color: 'var(--text-secondary)' }}>Demo:</strong><br />
-          Usuario: admin<br />
-          Password: admin123
-        </div>
       </div>
     </div>
   );

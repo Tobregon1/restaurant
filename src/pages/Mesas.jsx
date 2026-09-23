@@ -87,7 +87,7 @@ export default function Mesas() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--bg-card)', padding: 4, borderRadius: 'var(--radius)', border: '1px solid var(--border)', width: 'fit-content' }}>
-        {[['plano', [<Armchair size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Plano']], ['reservas', [<Calendar size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Reservas']]].map(([t, l]) => (
+        {[['plano', <><Armchair size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Plano</>], ['reservas', <><Calendar size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Reservas</>]].map(([t, l]) => (
           <button key={t} className={`btn ${tab === t ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab(t)}>{l}</button>
         ))}
       </div>
@@ -184,7 +184,7 @@ export default function Mesas() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setMesaModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={saveMesa}>{editingMesa ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Crear']}</button>
+          <button className="btn btn-primary" onClick={saveMesa}>{editingMesa ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Crear</>}</button>
         </div>
       </Modal>
 
@@ -233,7 +233,7 @@ export default function Mesas() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setReservaModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={saveReserva}>{editingReserva ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Reservar']}</button>
+          <button className="btn btn-primary" onClick={saveReserva}>{editingReserva ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Reservar</>}</button>
         </div>
       </Modal>
     </div>
