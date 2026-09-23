@@ -21,29 +21,6 @@ export const TenantProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(false);
 
-  // Seed localStorage on first load
-  useEffect(() => {
-    initStorage({
-      ros_negocios: initialNegocios,
-      ros_mesas: initialMesas,
-      ros_reservas: initialReservas,
-      ros_categorias: initialCategorias,
-      ros_menu_items: initialMenuItems,
-      ros_pedidos: initialPedidos,
-      ros_inventario: initialInventario,
-      ros_empleados: initialEmpleados,
-      ros_delivery: initialDelivery,
-      ros_ventas: initialVentas,
-    });
-    loadNegocios();
-    // Restore active tenant
-    const saved = localStorage.getItem('ros_tenant');
-    if (saved) {
-      const t = JSON.parse(saved);
-      setActiveTenant(t);
-    }
-  }, []);
-
   const loadNegocios = async () => {
     const data = await negociosService.getAll();
     setNegocios(data);
@@ -65,6 +42,30 @@ export const TenantProvider = ({ children }) => {
     setTenantData({ mesas, reservas, categorias, menuItems, pedidos, inventario, empleados, delivery, ventas });
     setLoading(false);
   }, []);
+
+  // Seed localStorage on first load
+  useEffect(() => {
+    initStorage({
+      ros_negocios: initialNegocios,
+      ros_mesas: initialMesas,
+      ros_reservas: initialReservas,
+      ros_categorias: initialCategorias,
+      ros_menu_items: initialMenuItems,
+      ros_pedidos: initialPedidos,
+      ros_inventario: initialInventario,
+      ros_empleados: initialEmpleados,
+      ros_delivery: initialDelivery,
+      ros_ventas: initialVentas,
+    });
+    loadNegocios();
+    // Restore active tenant
+    const saved = localStorage.getItem('ros_tenant');
+    if (saved) {
+      const t = JSON.parse(saved);
+      setActiveTenant(t);
+      loadTenantData(t.id);
+    }
+  }, [loadTenantData]);
 
   const selectTenant = (negocio) => {
     setActiveTenant(negocio);
@@ -106,8 +107,8 @@ export const TenantProvider = ({ children }) => {
     return m;
   };
   const actualizarMesa = async (id, changes) => {
-    await mesasService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, mesas: prev.mesas.map((m) => (m.id === id ? { ...m, ...changes } : m)) }));
+    const updated = await mesasService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, mesas: prev.mesas.map((m) => (m.id === id ? updated : m)) }));
   };
   const eliminarMesa = async (id) => {
     await mesasService.remove(activeTenant.id, id);
@@ -121,8 +122,8 @@ export const TenantProvider = ({ children }) => {
     return r;
   };
   const actualizarReserva = async (id, changes) => {
-    await reservasService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, reservas: prev.reservas.map((r) => (r.id === id ? { ...r, ...changes } : r)) }));
+    const updated = await reservasService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, reservas: prev.reservas.map((r) => (r.id === id ? updated : r)) }));
   };
   const eliminarReserva = async (id) => {
     await reservasService.remove(activeTenant.id, id);
@@ -136,8 +137,8 @@ export const TenantProvider = ({ children }) => {
     return c;
   };
   const actualizarCategoria = async (id, changes) => {
-    await categoriasService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, categorias: prev.categorias.map((c) => (c.id === id ? { ...c, ...changes } : c)) }));
+    const updated = await categoriasService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, categorias: prev.categorias.map((c) => (c.id === id ? updated : c)) }));
   };
   const eliminarCategoria = async (id) => {
     await categoriasService.remove(activeTenant.id, id);
@@ -149,23 +150,23 @@ export const TenantProvider = ({ children }) => {
     return i;
   };
   const actualizarMenuItem = async (id, changes) => {
-    await menuItemsService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, menuItems: prev.menuItems.map((i) => (i.id === id ? { ...i, ...changes } : i)) }));
+    const updated = await menuItemsService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, menuItems: prev.menuItems.map((i) => (i.id === id ? updated : i)) }));
   };
   const eliminarMenuItem = async (id) => {
     await menuItemsService.remove(activeTenant.id, id);
     setTenantData((prev) => ({ ...prev, menuItems: prev.menuItems.filter((i) => i.id !== id) }));
   };
 
-  // ── Pedidos CRUD ───────────────────────────────────────────
+  // ── Pedidos CRUD ─────────────────────────────────────────
   const crearPedido = async (data) => {
     const p = await pedidosService.create(activeTenant.id, data);
     setTenantData((prev) => ({ ...prev, pedidos: [...prev.pedidos, p] }));
     return p;
   };
   const actualizarPedido = async (id, changes) => {
-    await pedidosService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, pedidos: prev.pedidos.map((p) => (p.id === id ? { ...p, ...changes } : p)) }));
+    const updated = await pedidosService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, pedidos: prev.pedidos.map((p) => (p.id === id ? updated : p)) }));
   };
 
   // ── Inventario CRUD ────────────────────────────────────────
@@ -174,9 +175,14 @@ export const TenantProvider = ({ children }) => {
     setTenantData((prev) => ({ ...prev, inventario: [...prev.inventario, i] }));
     return i;
   };
+  const crearInventarioBulk = async (items) => {
+    await inventarioService.createBulk(activeTenant.id, items);
+    // Refresh to get the actual IDs from the database
+    await loadTenantData(activeTenant.id);
+  };
   const actualizarInventario = async (id, changes) => {
-    await inventarioService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, inventario: prev.inventario.map((i) => (i.id === id ? { ...i, ...changes } : i)) }));
+    const updated = await inventarioService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, inventario: prev.inventario.map((i) => (i.id === id ? updated : i)) }));
   };
   const eliminarInventario = async (id) => {
     await inventarioService.remove(activeTenant.id, id);
@@ -190,8 +196,8 @@ export const TenantProvider = ({ children }) => {
     return e;
   };
   const actualizarEmpleado = async (id, changes) => {
-    await empleadosService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, empleados: prev.empleados.map((e) => (e.id === id ? { ...e, ...changes } : e)) }));
+    const updated = await empleadosService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, empleados: prev.empleados.map((e) => (e.id === id ? updated : e)) }));
   };
   const eliminarEmpleado = async (id) => {
     await empleadosService.remove(activeTenant.id, id);
@@ -205,8 +211,8 @@ export const TenantProvider = ({ children }) => {
     return d;
   };
   const actualizarDelivery = async (id, changes) => {
-    await deliveryService.update(activeTenant.id, id, changes);
-    setTenantData((prev) => ({ ...prev, delivery: prev.delivery.map((d) => (d.id === id ? { ...d, ...changes } : d)) }));
+    const updated = await deliveryService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, delivery: prev.delivery.map((d) => (d.id === id ? updated : d)) }));
   };
 
   return (
@@ -219,7 +225,7 @@ export const TenantProvider = ({ children }) => {
       crearCategoria, actualizarCategoria, eliminarCategoria,
       crearMenuItem, actualizarMenuItem, eliminarMenuItem,
       crearPedido, actualizarPedido,
-      crearInventario, actualizarInventario, eliminarInventario,
+      crearInventario, crearInventarioBulk, actualizarInventario, eliminarInventario,
       crearEmpleado, actualizarEmpleado, eliminarEmpleado,
       crearDelivery, actualizarDelivery,
     }}>

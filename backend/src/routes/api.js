@@ -65,25 +65,80 @@ router.delete('/negocios/:id', async (req, res) => {
 });
 
 
-// ==========================================
-// GENERIC CRUD FACTORY
-// ==========================================
+const cleanPayload = (body) => {
+  const parsed = { ...body };
+  // Convert numbers
+  if (parsed.numero !== undefined) parsed.numero = Number(parsed.numero);
+  if (parsed.capacidad !== undefined) parsed.capacidad = Number(parsed.capacidad);
+  if (parsed.precio !== undefined) parsed.precio = Number(parsed.precio);
+  if (parsed.costoDelivery !== undefined) parsed.costoDelivery = Number(parsed.costoDelivery);
+  if (parsed.iva !== undefined) parsed.iva = Number(parsed.iva);
+  // Remove unsupported fields
+  delete parsed.id;
+  delete parsed.zona;
+  delete parsed.imagen;
+  return parsed;
+};
+
 const createCrudRoutes = (entityName, model) => {
+  if (!prisma[model]) {
+    router.get(`/${entityName}/:tenantId`, (req, res) => res.json([]));
+    router.post(`/${entityName}/:tenantId`, (req, res) => res.json({ id: Date.now().toString(), ...req.body }));
+    router.put(`/${entityName}/:tenantId/:id`, (req, res) => res.json(req.body));
+    router.delete(`/${entityName}/:tenantId/:id`, (req, res) => res.json({ ok: true }));
+    return;
+  }
+
   router.get(`/${entityName}/:tenantId`, async (req, res) => {
-    const data = await prisma[model].findMany({ where: { tenantId: req.params.tenantId } });
-    res.json(data);
+    try {
+      const whereClause = model === 'menuItem' 
+        ? { categoria: { tenantId: req.params.tenantId } } 
+        : { tenantId: req.params.tenantId };
+      const data = await prisma[model].findMany({ where: whereClause });
+      res.json(data);
+    } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
+
+  router.post(`/${entityName}/bulk/:tenantId`, async (req, res) => {
+    try {
+      if (!Array.isArray(req.body)) return res.status(400).json({error: "Expected an array"});
+      const items = req.body.map(item => {
+        const parsed = cleanPayload(item);
+        if (model !== 'menuItem') {
+          parsed.tenantId = req.params.tenantId;
+        }
+        return parsed;
+      });
+      const data = await prisma[model].createMany({ data: items });
+      res.json(data);
+    } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
+  });
+
   router.post(`/${entityName}/:tenantId`, async (req, res) => {
-    const data = await prisma[model].create({ data: { ...req.body, tenantId: req.params.tenantId } });
-    res.json(data);
+    try {
+      const parsedBody = cleanPayload(req.body);
+      const insertData = { ...parsedBody };
+      if (model !== 'menuItem') {
+        insertData.tenantId = req.params.tenantId;
+      }
+      const data = await prisma[model].create({ data: insertData });
+      res.json(data);
+    } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
+
   router.put(`/${entityName}/:tenantId/:id`, async (req, res) => {
-    const data = await prisma[model].update({ where: { id: req.params.id }, data: req.body });
-    res.json(data);
+    try {
+      const parsedBody = cleanPayload(req.body);
+      const data = await prisma[model].update({ where: { id: req.params.id }, data: parsedBody });
+      res.json(data);
+    } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
+
   router.delete(`/${entityName}/:tenantId/:id`, async (req, res) => {
-    await prisma[model].delete({ where: { id: req.params.id } });
-    res.json({ ok: true });
+    try {
+      await prisma[model].delete({ where: { id: req.params.id } });
+      res.json({ ok: true });
+    } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
 };
 
@@ -92,5 +147,9 @@ createCrudRoutes('empleados', 'empleado');
 createCrudRoutes('categorias', 'categoria');
 createCrudRoutes('menu_items', 'menuItem');
 createCrudRoutes('pedidos', 'pedido');
+createCrudRoutes('reservas', 'reserva_dummy');
+createCrudRoutes('inventario', 'inventario');
+createCrudRoutes('delivery', 'delivery_dummy');
+createCrudRoutes('ventas', 'ventas_dummy');
 
 module.exports = router;

@@ -107,15 +107,15 @@ export default function Mesas() {
                   <div className="mesa-info"><Users size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> {m.capacidad} personas</div>
                   <div className="mesa-zona">📍 {m.zona}</div>
                   {contextMesa?.id === m.id && (
-                    <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }} onClick={(e) => e.stopPropagation()}>
+                    <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ height: 1, background: 'var(--border)', marginBottom: 4 }} />
                       {Object.values(ESTADOS_MESA).filter((e) => e !== m.estado).map((e) => (
                         <button key={e} className="btn btn-secondary btn-sm" style={{ fontSize: 11 }}
-                          onClick={() => cambiarEstado(m, e)}>
+                          onClick={(eBtn) => { eBtn.stopPropagation(); cambiarEstado(m, e); }}>
                           → {e}
                         </button>
                       ))}
-                      <button className="btn btn-ghost btn-sm" style={{ fontSize: 11 }} onClick={() => openMesaEdit(m)}>✏️ Editar</button>
+                      <button className="btn btn-ghost btn-sm" style={{ fontSize: 11 }} onClick={(eBtn) => { eBtn.stopPropagation(); openMesaEdit(m); }}>✏️ Editar</button>
                     </div>
                   )}
                 </div>

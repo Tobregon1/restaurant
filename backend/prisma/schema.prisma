@@ -27,6 +27,7 @@ model Tenant {
   mesas         Mesa[]
   categorias    Categoria[]
   pedidos       Pedido[]
+  inventario    Inventario[]
 }
 
 model Empleado {
@@ -113,6 +114,19 @@ model OrderItem {
   precioUnit  Float
   subtotal    Float
   notas       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Inventario {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nombre      String
+  categoria   String   @default("General")
+  cantidad    Float    @default(0)
+  unidad      String   @default("unidades")
+  minimo      Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -1,15 +1,16 @@
-import { BarChart2, Pencil, CheckCircle2, AlertTriangle } from 'lucide-react';
-import React, { useState } from 'react';
+import { BarChart2, Pencil, CheckCircle2, AlertTriangle, Upload } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
 import { Modal, EmptyState } from '../components/shared/UI';
+import * as XLSX from 'xlsx';
 
 const defaultItem = { nombre: '', cantidad: 0, unidad: 'kg', minimo: 5, categoria: 'Secos', costo: 0 };
 const CATEGORIAS_INV = ['Proteínas', 'Verduras', 'Secos', 'Lácteos', 'Bebidas', 'Destilados', 'Frutas', 'Conservas', 'Condimentos'];
 const UNIDADES = ['kg', 'lt', 'unid', 'g', 'ml', 'caja', 'bolsa'];
 
 export default function Inventario() {
-  const { tenantData, crearInventario, actualizarInventario, eliminarInventario } = useTenant();
+  const { tenantData, crearInventario, actualizarInventario, eliminarInventario, crearInventarioBulk } = useTenant();
   const { toast } = useToast();
   const { inventario } = tenantData;
   const [modal, setModal] = useState(false);
@@ -19,6 +20,42 @@ export default function Inventario() {
   const [search, setSearch] = useState('');
   const [ajusteModal, setAjusteModal] = useState(null);
   const [ajusteVal, setAjusteVal] = useState('');
+  const fileInputRef = useRef(null);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+
+        const itemsToCreate = data.map(row => ({
+          nombre: row.Nombre || row.nombre || row.Producto || row.producto || 'Sin nombre',
+          categoria: row.Categoria || row.categoria || row.Categoría || row.categoría || 'General',
+          cantidad: Number(row.Cantidad || row.cantidad || row.Stock || row.stock || 0),
+          unidad: row.Unidad || row.unidad || 'unidades',
+          minimo: Number(row.Minimo || row.minimo || row.min || row['Stock Mínimo'] || 0)
+        }));
+
+        if (itemsToCreate.length === 0) return toast('El archivo está vacío o sin formato', 'error');
+
+        await crearInventarioBulk(itemsToCreate);
+        toast(`${itemsToCreate.length} productos importados correctamente`, 'success');
+      } catch (error) {
+        console.error(error);
+        toast('Error al procesar el archivo Excel', 'error');
+      } finally {
+        e.target.value = null;
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
 
   const openCreate = () => { setForm(defaultItem); setEditingId(null); setModal(true); };
   const openEdit = (i) => { setForm({ ...i }); setEditingId(i.id); setModal(true); };
@@ -66,6 +103,10 @@ export default function Inventario() {
             <span>🔍</span>
             <input placeholder="Buscar ingrediente..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
+          <input type="file" accept=".xlsx, .xls, .csv" style={{ display: 'none' }} ref={fileInputRef} onChange={handleFileUpload} />
+          <button className="btn btn-secondary" onClick={() => fileInputRef.current?.click()} title="Importar desde Excel">
+            <Upload size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Importar
+          </button>
           <button className="btn btn-primary" onClick={openCreate} id="btn-nuevo-inventario">+ Nuevo Ítem</button>
         </div>
       </div>

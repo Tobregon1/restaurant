@@ -8,17 +8,26 @@ const USE_MOCK = false;
 
 // Helper for real API calls
 const request = async (method, endpoint, body = null) => {
-  const token = localStorage.getItem('ros_token');
-  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-    ...(body && { body: JSON.stringify(body) }),
-  });
-  if (!res.ok) throw new Error(`API Error ${res.status}`);
-  return res.json();
+  try {
+    const token = localStorage.getItem('ros_token');
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      ...(body && { body: JSON.stringify(body) }),
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`API Error ${res.status}: ${errText}`);
+    }
+    return await res.json();
+  } catch (error) {
+    alert(`💥 ERROR DE RED O API:\n\n${error.message}\n\nRuta: ${method} ${endpoint}`);
+    console.error("Fetch Error:", error);
+    throw error;
+  }
 };
 
 // ── LocalStorage helpers ───────────────────────────────────
@@ -53,6 +62,17 @@ export const createService = (storageKey, apiPath) => ({
       return newItem;
     }
     return request('POST', `${apiPath}/${tenantId}`, item);
+  },
+  createBulk: async (tenantId, items) => {
+    if (USE_MOCK) {
+      const data = ls.get(storageKey, {});
+      if (!data[tenantId]) data[tenantId] = [];
+      const newItems = items.map((i, idx) => ({ ...i, id: `${Date.now()}-${idx}` }));
+      data[tenantId] = [...data[tenantId], ...newItems];
+      ls.set(storageKey, data);
+      return newItems;
+    }
+    return request('POST', `${apiPath}/bulk/${tenantId}`, items);
   },
   update: async (tenantId, id, changes) => {
     if (USE_MOCK) {
