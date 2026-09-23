@@ -1,4 +1,4 @@
-import { Utensils, CookingPot, ScrollText, CheckCircle2, XCircle } from 'lucide-react';
+import { Utensils, CookingPot, ScrollText, CheckCircle2, XCircle, Clock, ChefHat, Check } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
@@ -62,7 +62,7 @@ export default function Pedidos() {
     toast(`Pedido mesa ${pedido.mesaNumero} → ${nuevoEstado}`, 'info');
   };
 
-  const ESTADO_LABELS = { pendiente: '🟡 Pendiente', en_cocina: '🔵 En Cocina', listo: '🟢 ¡Listo!', entregado: [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Entregado'], cancelado: [<XCircle size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Cancelado'] };
+  const ESTADO_LABELS = { pendiente: <><Clock size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Pendiente</>, en_cocina: <><ChefHat size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> En Cocina</>, listo: <><Check size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> ¡Listo!</>, entregado: <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Entregado</>, cancelado: <><XCircle size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Cancelado</> };
 
   return (
     <div className="page-content" style={{ paddingBottom: 0 }}>

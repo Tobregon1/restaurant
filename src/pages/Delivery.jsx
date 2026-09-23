@@ -1,4 +1,4 @@
-import { Bike } from 'lucide-react';
+import { Bike, PlusCircle, ChefHat, CheckCircle2, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
@@ -8,7 +8,7 @@ import { ESTADOS_DELIVERY } from '../data/mockData';
 const defaultPedido = { cliente: '', telefono: '', direccion: '', items: [], estado: 'nuevo', repartidor: '', notas: '' };
 
 const ESTADO_STEPS = ['nuevo', 'preparando', 'en_camino', 'entregado'];
-const ESTADO_ICONS = { nuevo: 'PlusCircle', preparando: 'ChefHat', en_camino: 'Bike', entregado: 'CheckCircle2', cancelado: 'XCircle' };
+const ESTADO_ICONS = { nuevo: <PlusCircle />, preparando: <ChefHat />, en_camino: <Bike />, entregado: <CheckCircle2 />, cancelado: <XCircle /> };
 const ESTADO_LABELS = { nuevo: 'Nuevo', preparando: 'Preparando', en_camino: 'En Camino', entregado: 'Entregado', cancelado: 'Cancelado' };
 
 const formatCurrency = (n) => `$${n?.toLocaleString('es-AR') ?? 0}`;

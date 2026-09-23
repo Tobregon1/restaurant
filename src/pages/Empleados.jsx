@@ -34,7 +34,7 @@ export default function Empleados() {
     return matchRol && matchSearch;
   });
 
-  const ROL_ICONS = { Mozo: 'Utensils', Cocinero: 'ChefHat', Cajero: 'BadgeDollarSign', Gerente: 'User', Bartender: 'Beer', Delivery: 'Bike' };
+  const ROL_ICONS = { Mozo: <Utensils />, Cocinero: <ChefHat />, Cajero: <BadgeDollarSign />, Gerente: <User />, Bartender: <Beer />, Delivery: <Bike /> };
   const TURNO_COLORS = { Mañana: 'var(--accent)', Tarde: 'var(--orange)', Noche: 'var(--purple)', Split: 'var(--blue)' };
 
   const stats = ROLES_EMPLEADO.map((r) => ({ rol: r, count: empleados.filter((e) => e.rol === r && e.activo).length })).filter((s) => s.count > 0);
@@ -60,7 +60,7 @@ export default function Empleados() {
         <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
           {stats.map((s) => (
             <div key={s.rol} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 20 }}>{ROL_ICONS[s.rol] || [<User size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, '']}</span>
+              <span style={{ fontSize: 20 }}>{ROL_ICONS[s.rol] || <User size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>}</span>
               <div>
                 <div style={{ fontWeight: 700, fontSize: 15 }}>{s.count}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.rol}{s.count !== 1 ? 's' : ''}</div>
@@ -163,7 +163,7 @@ export default function Empleados() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={save}>{editingId ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Agregar']}</button>
+          <button className="btn btn-primary" onClick={save}>{editingId ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Agregar</>}</button>
         </div>
       </Modal>
     </div>

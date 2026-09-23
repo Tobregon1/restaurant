@@ -168,7 +168,7 @@ export default function Menu() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setCatModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={saveCat}>{editingCat ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Crear']}</button>
+          <button className="btn btn-primary" onClick={saveCat}>{editingCat ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Crear</>}</button>
         </div>
       </Modal>
 
@@ -212,7 +212,7 @@ export default function Menu() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setItemModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={saveItem}>{editingItem ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Crear']}</button>
+          <button className="btn btn-primary" onClick={saveItem}>{editingItem ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Crear</>}</button>
         </div>
       </Modal>
     </div>

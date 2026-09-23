@@ -36,10 +36,10 @@ export default function ConfigNegocio() {
   };
 
   const sections = [
-    { id: 'general', label: [<Building size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'General'], icon: 'Building' },
+    { id: 'general', label: <><Building size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> General</>, icon: 'Building' },
     { id: 'contacto', label: '📞 Contacto', icon: '📞' },
     { id: 'apariencia', label: '🎨 Apariencia', icon: '🎨' },
-    { id: 'delivery', label: [<Bike size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Delivery'], icon: 'Bike' },
+    { id: 'delivery', label: <><Bike size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Delivery</>, icon: 'Bike' },
     { id: 'pagos', label: '💳 Pagos & Fiscal', icon: '💳' },
   ];
 

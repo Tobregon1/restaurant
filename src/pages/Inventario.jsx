@@ -171,7 +171,7 @@ export default function Inventario() {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button>
-          <button className="btn btn-primary" onClick={save}>{editingId ? '💾 Guardar' : [<CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/>, 'Crear']}</button>
+          <button className="btn btn-primary" onClick={save}>{editingId ? '💾 Guardar' : <><CheckCircle2 size={16} style={{marginRight: 4, verticalAlign: 'middle'}}/> Crear</>}</button>
         </div>
       </Modal>
 
