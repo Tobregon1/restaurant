@@ -19,7 +19,7 @@ export default function Login() {
     setLoading(false);
     if (result.ok) {
       toast('¡Bienvenido al sistema! ', 'success');
-      navigate('/negocios');
+      navigate('/');
     } else {
       toast(result.error, 'error');
     }

@@ -1,4 +1,4 @@
-import { ClipboardList, Pencil, CheckCircle2 } from 'lucide-react';
+import { ClipboardList, Pencil, CheckCircle2, Utensils, Pizza, Coffee, Beer, Beef, Salad, IceCream, CupSoda } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
@@ -7,6 +7,7 @@ import { Modal, EmptyState, Toggle } from '../components/shared/UI';
 const defaultCat = { nombre: '', icono: 'Utensils', orden: 1 };
 const defaultItem = { nombre: '', descripcion: '', precio: 0, categoriaId: '', disponible: true, tiempo: 15 };
 const ICONOS = ['Utensils', 'Pizza', 'Coffee', 'Beer', 'Beef', 'Salad', 'IceCream', 'CupSoda'];
+const iconMap = { Utensils, Pizza, Coffee, Beer, Beef, Salad, IceCream, CupSoda };
 
 export default function Menu() {
   const { tenantData, crearCategoria, actualizarCategoria, eliminarCategoria, crearMenuItem, actualizarMenuItem, eliminarMenuItem } = useTenant();
@@ -64,6 +65,9 @@ export default function Menu() {
           <div className="page-subtitle">{stats.total} ítems · {stats.disponibles} disponibles · {categorias.length} categorías</div>
         </div>
         <div className="page-actions">
+          <button className="btn btn-secondary" onClick={() => window.open(`/m/${tenantData.id}`, '_blank')} title="Ver Menú Público">
+            📱 Ver Menú QR
+          </button>
           <div className="search-bar" style={{ width: 220 }}>
             <span>🔍</span>
             <input placeholder="Buscar plato..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -92,7 +96,7 @@ export default function Menu() {
                   style={{ flex: 1 }}
                   onClick={() => setActiveTab(c.id)}
                 >
-                  <span>{c.icono}</span> {c.nombre}
+                  <span>{(() => { const Icon = iconMap[c.icono] || Utensils; return <Icon size={18} />; })()}</span> {c.nombre}
                   {count > 0 && <span className="nav-badge">{count}</span>}
                 </div>
                 <button className="btn btn-ghost btn-sm btn-icon" style={{ padding: '4px 6px' }} onClick={() => openCatEdit(c)}><Pencil size={16} /></button>
@@ -116,7 +120,7 @@ export default function Menu() {
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         <span style={{ fontWeight: 600, fontSize: 14 }}>{item.nombre}</span>
-                        {cat && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{cat.icono} {cat.nombre}</span>}
+                        {cat && <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>{(() => { const Icon = iconMap[cat.icono] || Utensils; return <Icon size={12} />; })()} {cat.nombre}</span>}
                         {!item.disponible && <span className="badge badge-cancelado" style={{ fontSize: 10 }}>No disponible</span>}
                       </div>
                       {item.descripcion && <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>{item.descripcion}</div>}
@@ -154,15 +158,18 @@ export default function Menu() {
           <div className="form-group">
             <label className="form-label">Ícono</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {ICONOS.map((ico) => (
-                <button
-                  key={ico}
-                  onClick={() => setC('icono', ico)}
-                  style={{ width: 36, height: 36, borderRadius: 8, background: catForm.icono === ico ? 'var(--accent-dim)' : 'var(--bg-elevated)', border: catForm.icono === ico ? '2px solid var(--accent)' : '1px solid var(--border)', fontSize: 20, cursor: 'pointer', transition: 'all 0.15s' }}
-                >
-                  {ico}
-                </button>
-              ))}
+              {ICONOS.map((ico) => {
+                const IconComp = iconMap[ico];
+                return (
+                  <button
+                    key={ico}
+                    onClick={() => setC('icono', ico)}
+                    style={{ width: 36, height: 36, borderRadius: 8, background: catForm.icono === ico ? 'var(--accent-dim)' : 'var(--bg-elevated)', border: catForm.icono === ico ? '2px solid var(--accent)' : '1px solid var(--border)', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', color: catForm.icono === ico ? 'var(--accent)' : 'var(--text-color)' }}
+                  >
+                    <IconComp size={20} />
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -184,7 +191,7 @@ export default function Menu() {
               <label className="form-label">Categoría *</label>
               <select value={itemForm.categoriaId} onChange={(e) => setI('categoriaId', e.target.value)} id="item-cat">
                 <option value="">Seleccioná...</option>
-                {categorias.map((c) => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
+                {categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
               </select>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { Sidebar, Topbar } from './components/Layout/Layout';
 
 import Login from './pages/Login';
+import PublicMenu from './pages/PublicMenu';
 import GestionNegocios from './pages/GestionNegocios';
 import Dashboard from './pages/Dashboard';
 import Mesas from './pages/Mesas';
@@ -19,12 +20,18 @@ import Empleados from './pages/Empleados';
 import Delivery from './pages/Delivery';
 import Reportes from './pages/Reportes';
 import ConfigNegocio from './pages/ConfigNegocio';
+import { hasPermission, getFallbackRoute } from './utils/permissions';
 
 import './styles/index.css';
 
-const ProtectedLayout = ({ children }) => {
+const ProtectedLayout = ({ children, path }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
+
+  if (!hasPermission(user.rol, path)) {
+    return <Navigate to={getFallbackRoute(user.rol)} replace />;
+  }
+
   return (
     <div className="app-layout">
       <Sidebar />
@@ -49,21 +56,22 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/negocios" replace /> : <Login />} />
-      <Route path="/" element={<Navigate to={user ? '/negocios' : '/login'} replace />} />
+      <Route path="/m/:tenantId" element={<PublicMenu />} />
+      <Route path="/login" element={user ? <Navigate to={getFallbackRoute(user.rol)} replace /> : <Login />} />
+      <Route path="/" element={<Navigate to={user ? getFallbackRoute(user.rol) : '/login'} replace />} />
 
-      <Route path="/negocios" element={<ProtectedLayout><GestionNegocios /></ProtectedLayout>} />
-      <Route path="/dashboard" element={<ProtectedLayout><Dashboard /></ProtectedLayout>} />
-      <Route path="/mesas" element={<ProtectedLayout><Mesas /></ProtectedLayout>} />
-      <Route path="/pedidos" element={<ProtectedLayout><Pedidos /></ProtectedLayout>} />
-      <Route path="/cocina" element={<ProtectedLayout><Cocina /></ProtectedLayout>} />
-      <Route path="/menu" element={<ProtectedLayout><Menu /></ProtectedLayout>} />
-      <Route path="/caja" element={<ProtectedLayout><Caja /></ProtectedLayout>} />
-      <Route path="/inventario" element={<ProtectedLayout><Inventario /></ProtectedLayout>} />
-      <Route path="/empleados" element={<ProtectedLayout><Empleados /></ProtectedLayout>} />
-      <Route path="/delivery" element={<ProtectedLayout><Delivery /></ProtectedLayout>} />
-      <Route path="/reportes" element={<ProtectedLayout><Reportes /></ProtectedLayout>} />
-      <Route path="/config" element={<ProtectedLayout><ConfigNegocio /></ProtectedLayout>} />
+      <Route path="/negocios" element={<ProtectedLayout path="/negocios"><GestionNegocios /></ProtectedLayout>} />
+      <Route path="/dashboard" element={<ProtectedLayout path="/dashboard"><Dashboard /></ProtectedLayout>} />
+      <Route path="/mesas" element={<ProtectedLayout path="/mesas"><Mesas /></ProtectedLayout>} />
+      <Route path="/pedidos" element={<ProtectedLayout path="/pedidos"><Pedidos /></ProtectedLayout>} />
+      <Route path="/cocina" element={<ProtectedLayout path="/cocina"><Cocina /></ProtectedLayout>} />
+      <Route path="/menu" element={<ProtectedLayout path="/menu"><Menu /></ProtectedLayout>} />
+      <Route path="/caja" element={<ProtectedLayout path="/caja"><Caja /></ProtectedLayout>} />
+      <Route path="/inventario" element={<ProtectedLayout path="/inventario"><Inventario /></ProtectedLayout>} />
+      <Route path="/empleados" element={<ProtectedLayout path="/empleados"><Empleados /></ProtectedLayout>} />
+      <Route path="/delivery" element={<ProtectedLayout path="/delivery"><Delivery /></ProtectedLayout>} />
+      <Route path="/reportes" element={<ProtectedLayout path="/reportes"><Reportes /></ProtectedLayout>} />
+      <Route path="/config" element={<ProtectedLayout path="/config"><ConfigNegocio /></ProtectedLayout>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { ESTADOS_PEDIDO } from '../../data/mockData';
+import { hasPermission } from '../../utils/permissions';
 
 const NEGOCIO_ICONS = { Restaurante: Utensils, Bar: Beer, Restobar: GlassWater, Cafetería: Coffee, Pizzería: Pizza, Parrilla: Beef, Sushi: Fish, Heladería: IceCream };
 
@@ -29,12 +30,15 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { activeTenant, tenantData, clearTenant } = useTenant();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const pendientes = tenantData.pedidos?.filter((p) => p.estado === ESTADOS_PEDIDO.PENDIENTE).length ?? 0;
   const deliveryNuevos = tenantData.delivery?.filter((d) => d.estado === 'nuevo').length ?? 0;
 
   const handleNav = (path) => navigate(path);
+
+  const filteredNavItems = navItems.filter(item => hasPermission(user?.rol, item.path));
+  const filteredAdminItems = adminItems.filter(item => hasPermission(user?.rol, item.path));
 
   return (
     <aside className="sidebar">
@@ -49,7 +53,7 @@ export const Sidebar = () => {
         {activeTenant && (
           <div
             className="tenant-badge"
-            onClick={() => navigate('/negocios')}
+            onClick={() => hasPermission(user?.rol, '/negocios') && navigate('/negocios')}
             title="Cambiar negocio"
             style={{ '--accent': activeTenant.color || '#f59e0b' }}
           >
@@ -68,7 +72,7 @@ export const Sidebar = () => {
         {activeTenant && (
           <>
             <div className="nav-section-label">Operaciones</div>
-            {navItems.map((item) => {
+            {filteredNavItems.map((item) => {
               const badge = item.path === '/pedidos' ? pendientes : item.path === '/delivery' ? deliveryNuevos : 0;
               return (
                 <div
@@ -85,17 +89,21 @@ export const Sidebar = () => {
           </>
         )}
 
-        <div className="nav-section-label" style={{ marginTop: 12 }}>Administración</div>
-        {adminItems.map((item) => (
-          <div
-            key={item.path}
-            className={`nav-item${location.pathname === item.path ? ' active' : ''}`}
-            onClick={() => handleNav(item.path)}
-          >
-            <span className="nav-item-icon"><item.icon size={18} /></span>
-            {item.label}
-          </div>
-        ))}
+        {filteredAdminItems.length > 0 && (
+          <>
+            <div className="nav-section-label" style={{ marginTop: 12 }}>Administración</div>
+            {filteredAdminItems.map((item) => (
+              <div
+                key={item.path}
+                className={`nav-item${location.pathname === item.path ? ' active' : ''}`}
+                onClick={() => handleNav(item.path)}
+              >
+                <span className="nav-item-icon"><item.icon size={18} /></span>
+                {item.label}
+              </div>
+            ))}
+          </>
+        )}
       </nav>
 
       <div className="sidebar-footer">
