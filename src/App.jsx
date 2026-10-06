@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import PublicMenu from './pages/PublicMenu';
 import GestionNegocios from './pages/GestionNegocios';
 import Dashboard from './pages/Dashboard';
+import Reservas from './pages/Reservas';
 import Mesas from './pages/Mesas';
 import Pedidos from './pages/Pedidos';
 import Cocina from './pages/Cocina';
@@ -17,6 +18,8 @@ import Menu from './pages/Menu';
 import Caja from './pages/Caja';
 import Inventario from './pages/Inventario';
 import Empleados from './pages/Empleados';
+import Clientes from './pages/Clientes';
+import Proveedores from './pages/Proveedores';
 import Delivery from './pages/Delivery';
 import Reportes from './pages/Reportes';
 import ConfigNegocio from './pages/ConfigNegocio';
@@ -62,6 +65,7 @@ const AppRoutes = () => {
 
       <Route path="/negocios" element={<ProtectedLayout path="/negocios"><GestionNegocios /></ProtectedLayout>} />
       <Route path="/dashboard" element={<ProtectedLayout path="/dashboard"><Dashboard /></ProtectedLayout>} />
+      <Route path="/reservas" element={<ProtectedLayout path="/reservas"><Reservas /></ProtectedLayout>} />
       <Route path="/mesas" element={<ProtectedLayout path="/mesas"><Mesas /></ProtectedLayout>} />
       <Route path="/pedidos" element={<ProtectedLayout path="/pedidos"><Pedidos /></ProtectedLayout>} />
       <Route path="/cocina" element={<ProtectedLayout path="/cocina"><Cocina /></ProtectedLayout>} />
@@ -69,6 +73,8 @@ const AppRoutes = () => {
       <Route path="/caja" element={<ProtectedLayout path="/caja"><Caja /></ProtectedLayout>} />
       <Route path="/inventario" element={<ProtectedLayout path="/inventario"><Inventario /></ProtectedLayout>} />
       <Route path="/empleados" element={<ProtectedLayout path="/empleados"><Empleados /></ProtectedLayout>} />
+      <Route path="/clientes" element={<ProtectedLayout path="/clientes"><Clientes /></ProtectedLayout>} />
+      <Route path="/proveedores" element={<ProtectedLayout path="/proveedores"><Proveedores /></ProtectedLayout>} />
       <Route path="/delivery" element={<ProtectedLayout path="/delivery"><Delivery /></ProtectedLayout>} />
       <Route path="/reportes" element={<ProtectedLayout path="/reportes"><Reportes /></ProtectedLayout>} />
       <Route path="/config" element={<ProtectedLayout path="/config"><ConfigNegocio /></ProtectedLayout>} />

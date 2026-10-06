@@ -1,4 +1,4 @@
-import { Utensils, Beer, GlassWater, Coffee, Pizza, Beef, Fish, IceCream, BarChart2, Armchair, ClipboardList, ChefHat, BadgeDollarSign, Package, Bike, Users, TrendingUp, Building, Settings, LogOut, User } from 'lucide-react';
+import { Utensils, Beer, GlassWater, Coffee, Pizza, Beef, Fish, IceCream, BarChart2, Armchair, ClipboardList, ChefHat, BadgeDollarSign, Package, Bike, Users, TrendingUp, Building, Settings, LogOut, User, Calendar, Contact, Truck } from 'lucide-react';
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTenant } from '../../contexts/TenantContext';
@@ -10,13 +10,16 @@ const NEGOCIO_ICONS = { Restaurante: Utensils, Bar: Beer, Restobar: GlassWater, 
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: BarChart2 },
+  { path: '/reservas', label: 'Reservas', icon: Calendar },
   { path: '/mesas', label: 'Mesas', icon: Armchair },
   { path: '/pedidos', label: 'Pedidos', icon: ClipboardList },
   { path: '/cocina', label: 'Cocina', icon: ChefHat },
   { path: '/menu', label: 'Menú', icon: Pizza },
   { path: '/caja', label: 'Caja', icon: BadgeDollarSign },
   { path: '/inventario', label: 'Inventario', icon: Package },
+  { path: '/proveedores', label: 'Proveedores', icon: Truck },
   { path: '/delivery', label: 'Delivery', icon: Bike },
+  { path: '/clientes', label: 'Clientes', icon: Contact },
   { path: '/empleados', label: 'Empleados', icon: Users },
   { path: '/reportes', label: 'Reportes', icon: TrendingUp },
 ];
@@ -121,11 +124,11 @@ export const Topbar = () => {
   const location = useLocation();
 
   const titles = {
-    '/dashboard': 'Dashboard', '/mesas': 'Mesas & Reservas',
+    '/dashboard': 'Dashboard', '/reservas': 'Reservas', '/mesas': 'Mesas',
     '/pedidos': 'Pedidos', '/cocina': 'Cocina (KDS)',
     '/menu': 'Menú Digital', '/caja': 'Caja',
-    '/inventario': 'Inventario', '/delivery': 'Delivery',
-    '/empleados': 'Empleados', '/reportes': 'Reportes',
+    '/inventario': 'Inventario', '/proveedores': 'Proveedores', '/delivery': 'Delivery',
+    '/clientes': 'Clientes', '/empleados': 'Empleados', '/reportes': 'Reportes',
     '/negocios': 'Gestión de Negocios', '/config': 'Configuración',
   };
 

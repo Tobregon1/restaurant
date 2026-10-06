@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import {
   negociosService, mesasService, reservasService, categoriasService,
   menuItemsService, pedidosService, inventarioService, empleadosService,
-  deliveryService, ventasService, initStorage,
+  deliveryService, ventasService, clientesService, proveedoresService, initStorage,
 } from '../services/api';
 import {
   initialNegocios, initialMesas, initialReservas, initialCategorias,
@@ -17,7 +17,7 @@ export const TenantProvider = ({ children }) => {
   const [activeTenant, setActiveTenant] = useState(null);
   const [tenantData, setTenantData] = useState({
     mesas: [], reservas: [], categorias: [], menuItems: [],
-    pedidos: [], inventario: [], empleados: [], delivery: [], ventas: [],
+    pedidos: [], inventario: [], empleados: [], delivery: [], ventas: [], clientes: [], proveedores: [],
   });
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +28,7 @@ export const TenantProvider = ({ children }) => {
 
   const loadTenantData = useCallback(async (tenantId) => {
     setLoading(true);
-    const [mesas, reservas, categorias, menuItems, pedidos, inventario, empleados, delivery, ventas] = await Promise.all([
+    const [mesas, reservas, categorias, menuItems, pedidos, inventario, empleados, delivery, ventas, clientes, proveedores] = await Promise.all([
       mesasService.getAll(tenantId),
       reservasService.getAll(tenantId),
       categoriasService.getAll(tenantId),
@@ -38,8 +38,10 @@ export const TenantProvider = ({ children }) => {
       empleadosService.getAll(tenantId),
       deliveryService.getAll(tenantId),
       ventasService.getAll(tenantId),
+      clientesService.getAll(tenantId),
+      proveedoresService.getAll(tenantId),
     ]);
-    setTenantData({ mesas, reservas, categorias, menuItems, pedidos, inventario, empleados, delivery, ventas });
+    setTenantData({ mesas, reservas, categorias, menuItems, pedidos, inventario, empleados, delivery, ventas, clientes, proveedores });
     setLoading(false);
   }, []);
 
@@ -67,6 +69,30 @@ export const TenantProvider = ({ children }) => {
     }
   }, [loadTenantData]);
 
+  // ── Auto-polling para Tiempo Real (Cocina/Caja/Mozos) ──
+  useEffect(() => {
+    if (!activeTenant) return;
+    
+    // Cada 10 segundos busca nuevos pedidos y estado de mesas
+    const interval = setInterval(async () => {
+      try {
+        const [mesas, pedidos] = await Promise.all([
+          mesasService.getAll(activeTenant.id),
+          pedidosService.getAll(activeTenant.id)
+        ]);
+        setTenantData((prev) => ({
+          ...prev,
+          mesas,
+          pedidos
+        }));
+      } catch (error) {
+        console.error('Error sincronizando en tiempo real:', error);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [activeTenant]);
+
   const selectTenant = (negocio) => {
     setActiveTenant(negocio);
     localStorage.setItem('ros_tenant', JSON.stringify(negocio));
@@ -76,7 +102,7 @@ export const TenantProvider = ({ children }) => {
   const clearTenant = () => {
     setActiveTenant(null);
     localStorage.removeItem('ros_tenant');
-    setTenantData({ mesas: [], reservas: [], categorias: [], menuItems: [], pedidos: [], inventario: [], empleados: [], delivery: [], ventas: [] });
+    setTenantData({ mesas: [], reservas: [], categorias: [], menuItems: [], pedidos: [], inventario: [], empleados: [], delivery: [], ventas: [], clientes: [], proveedores: [] });
   };
 
   // ── Negocios CRUD ──────────────────────────────────────────
@@ -215,6 +241,36 @@ export const TenantProvider = ({ children }) => {
     setTenantData((prev) => ({ ...prev, delivery: prev.delivery.map((d) => (d.id === id ? updated : d)) }));
   };
 
+  // ── Clientes CRUD ─────────────────────────────────────────
+  const crearCliente = async (data) => {
+    const c = await clientesService.create(activeTenant.id, data);
+    setTenantData((prev) => ({ ...prev, clientes: [...prev.clientes, c] }));
+    return c;
+  };
+  const actualizarCliente = async (id, changes) => {
+    const updated = await clientesService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, clientes: prev.clientes.map((c) => (c.id === id ? updated : c)) }));
+  };
+  const eliminarCliente = async (id) => {
+    await clientesService.remove(activeTenant.id, id);
+    setTenantData((prev) => ({ ...prev, clientes: prev.clientes.filter((c) => c.id !== id) }));
+  };
+
+  // ── Proveedores CRUD ──────────────────────────────────────
+  const crearProveedor = async (data) => {
+    const p = await proveedoresService.create(activeTenant.id, data);
+    setTenantData((prev) => ({ ...prev, proveedores: [...prev.proveedores, p] }));
+    return p;
+  };
+  const actualizarProveedor = async (id, changes) => {
+    const updated = await proveedoresService.update(activeTenant.id, id, changes);
+    setTenantData((prev) => ({ ...prev, proveedores: prev.proveedores.map((p) => (p.id === id ? updated : p)) }));
+  };
+  const eliminarProveedor = async (id) => {
+    await proveedoresService.remove(activeTenant.id, id);
+    setTenantData((prev) => ({ ...prev, proveedores: prev.proveedores.filter((p) => p.id !== id) }));
+  };
+
   return (
     <TenantContext.Provider value={{
       negocios, activeTenant, tenantData, loading,
@@ -228,6 +284,8 @@ export const TenantProvider = ({ children }) => {
       crearInventario, crearInventarioBulk, actualizarInventario, eliminarInventario,
       crearEmpleado, actualizarEmpleado, eliminarEmpleado,
       crearDelivery, actualizarDelivery,
+      crearCliente, actualizarCliente, eliminarCliente,
+      crearProveedor, actualizarProveedor, eliminarProveedor,
     }}>
       {children}
     </TenantContext.Provider>

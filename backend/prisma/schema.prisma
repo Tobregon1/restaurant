@@ -23,11 +23,25 @@ model Tenant {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
+  // AFIP Integration
+  afipCuit         String?
+  afipPuntoVenta   Int?
+  afipCondicionIva String?
+  afipCrt          String?
+  afipKey          String?
+
+  // Mercado Pago Integration
+  mpAccessToken    String?
+  mpDeviceId       String?
+
   empleados     Empleado[]
   mesas         Mesa[]
   categorias    Categoria[]
   pedidos       Pedido[]
   inventario    Inventario[]
+  reservas      Reserva[]
+  clientes      Cliente[]
+  proveedores   Proveedor[]
 }
 
 model Empleado {
@@ -56,6 +70,7 @@ model Mesa {
   updatedAt   DateTime @updatedAt
 
   pedidos     Pedido[]
+  reservas    Reserva[]
 }
 
 model Categoria {
@@ -79,6 +94,7 @@ model MenuItem {
   nombre      String
   precio      Float
   descripcion String?
+  tiempo      Int       @default(15)
   disponible  Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -102,6 +118,16 @@ model Pedido {
   total       Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Facturación Electrónica (AFIP)
+  facturaTipo      String? // A, B, C
+  facturaNumero    String?
+  facturaCae       String?
+  facturaCaeVto    String?
+
+  // Mercado Pago
+  mpPaymentId      String?
+  mpStatus         String? // 'pending', 'approved', 'rejected'
 
   items       OrderItem[]
 }
@@ -129,6 +155,52 @@ model Inventario {
   cantidad    Float    @default(0)
   unidad      String   @default("unidades")
   minimo      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Reserva {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  mesaId          String?
+  mesa            Mesa?    @relation(fields: [mesaId], references: [id], onDelete: SetNull)
+  clienteNombre   String
+  clienteTelefono String?
+  fechaHora       DateTime
+  personas        Int
+  estado          String   @default("pendiente") // pendiente, confirmada, completada, cancelada
+  notas           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Cliente {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nombre      String
+  telefono    String?
+  email       String?
+  direccion   String?
+  dniCuit       String?
+  condicionIva  String?
+  puntos      Int      @default(0)
+  notas       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Proveedor {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nombre      String
+  contacto    String?
+  telefono    String?
+  email       String?
+  categoria   String?  // Ej. Bebidas, Carnes, Verduras
+  notas       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

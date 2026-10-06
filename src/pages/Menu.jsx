@@ -10,7 +10,7 @@ const ICONOS = ['Utensils', 'Pizza', 'Coffee', 'Beer', 'Beef', 'Salad', 'IceCrea
 const iconMap = { Utensils, Pizza, Coffee, Beer, Beef, Salad, IceCream, CupSoda };
 
 export default function Menu() {
-  const { tenantData, crearCategoria, actualizarCategoria, eliminarCategoria, crearMenuItem, actualizarMenuItem, eliminarMenuItem } = useTenant();
+  const { activeTenant, tenantData, crearCategoria, actualizarCategoria, eliminarCategoria, crearMenuItem, actualizarMenuItem, eliminarMenuItem } = useTenant();
   const { toast } = useToast();
   const { categorias, menuItems } = tenantData;
   const [catModal, setCatModal] = useState(false);
@@ -65,7 +65,10 @@ export default function Menu() {
           <div className="page-subtitle">{stats.total} ítems · {stats.disponibles} disponibles · {categorias.length} categorías</div>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary" onClick={() => window.open(`/m/${tenantData.id}`, '_blank')} title="Ver Menú Público">
+          <button className="btn btn-secondary" onClick={() => {
+            const fallbackId = JSON.parse(localStorage.getItem('ros_tenant') || '{}').id;
+            window.open(`/m/${activeTenant?.id || fallbackId}`, '_blank');
+          }} title="Ver Menú Público">
             📱 Ver Menú QR
           </button>
           <div className="search-bar" style={{ width: 220 }}>
