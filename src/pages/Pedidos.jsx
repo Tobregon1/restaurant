@@ -1,5 +1,6 @@
 import { Utensils, CookingPot, ScrollText, CheckCircle2, XCircle, Clock, ChefHat, Check } from 'lucide-react';
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
 import { ESTADOS_PEDIDO } from '../data/mockData';
@@ -7,6 +8,7 @@ import { ESTADOS_PEDIDO } from '../data/mockData';
 const formatCurrency = (n) => `$${n?.toLocaleString('es-AR') ?? 0}`;
 
 export default function Pedidos() {
+  const { user } = useAuth();
   const { tenantData, crearPedido, actualizarPedido, actualizarMesa } = useTenant();
   const { toast } = useToast();
   const { mesas, menuItems, categorias, pedidos } = tenantData;
@@ -45,7 +47,7 @@ export default function Pedidos() {
       mesaNumero: selectedMesa.numero,
       estado: ESTADOS_PEDIDO.PENDIENTE,
       items: orderItems,
-      mozo: 'Sistema',
+      mozo: user?.nombre || 'Sistema',
       creadoEn: new Date().toISOString(),
       total,
     };
@@ -197,10 +199,10 @@ export default function Pedidos() {
                   <span style={{ fontWeight: 700, color: 'var(--accent)' }}>Total: {formatCurrency(p.total)}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                  {p.estado === ESTADOS_PEDIDO.PENDIENTE && (
+                  {p.estado === ESTADOS_PEDIDO.PENDIENTE && user?.rol !== 'Mozo' && (
                     <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => cambiarEstado(p, ESTADOS_PEDIDO.EN_COCINA)}>→ Cocina</button>
                   )}
-                  {p.estado === ESTADOS_PEDIDO.EN_COCINA && (
+                  {p.estado === ESTADOS_PEDIDO.EN_COCINA && user?.rol !== 'Mozo' && (
                     <button className="btn btn-success btn-sm" style={{ flex: 1 }} onClick={() => cambiarEstado(p, ESTADOS_PEDIDO.LISTO)}>✓ Listo</button>
                   )}
                   {p.estado === ESTADOS_PEDIDO.LISTO && (

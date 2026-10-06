@@ -2,6 +2,7 @@ import { Utensils } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
 
 export default function Login() {
@@ -9,6 +10,7 @@ export default function Login() {
   const [pass, setPass] = useState('admin123');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { selectTenant } = useTenant();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -18,6 +20,9 @@ export default function Login() {
     const result = await login(username, pass);
     setLoading(false);
     if (result.ok) {
+      if (result.tenant) {
+        selectTenant(result.tenant);
+      }
       toast('¡Bienvenido al sistema! ', 'success');
       navigate('/');
     } else {

@@ -1,5 +1,6 @@
 import { Calendar, Armchair, Users, Pencil, CheckCircle2 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import { useToast } from '../contexts/ToastContext';
 import { Modal, Badge, EmptyState } from '../components/shared/UI';
@@ -15,6 +16,7 @@ const ESTADO_COLORS = {
 };
 
 export default function Mesas() {
+  const { user } = useAuth();
   const { tenantData, crearMesa, actualizarMesa, eliminarMesa, crearReserva, actualizarReserva, eliminarReserva } = useTenant();
   const { toast } = useToast();
   const { mesas, reservas } = tenantData;
@@ -69,8 +71,12 @@ export default function Mesas() {
           <div className="page-subtitle">{mesas.length} mesas · {reservas.length} reservas</div>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary" onClick={openReservaCreate} id="btn-nueva-reserva"><Calendar size={16} /> Nueva Reserva</button>
-          <button className="btn btn-primary" onClick={openMesaCreate} id="btn-nueva-mesa">+ Nueva Mesa</button>
+          {user?.rol !== 'Mozo' && (
+            <>
+              <button className="btn btn-secondary" onClick={openReservaCreate} id="btn-nueva-reserva"><Calendar size={16} /> Nueva Reserva</button>
+              <button className="btn btn-primary" onClick={openMesaCreate} id="btn-nueva-mesa">+ Nueva Mesa</button>
+            </>
+          )}
         </div>
       </div>
 
@@ -115,7 +121,9 @@ export default function Mesas() {
                           → {e}
                         </button>
                       ))}
-                      <button className="btn btn-ghost btn-sm" style={{ fontSize: 11 }} onClick={(eBtn) => { eBtn.stopPropagation(); openMesaEdit(m); }}>✏️ Editar</button>
+                      {user?.rol !== 'Mozo' && (
+                        <button className="btn btn-ghost btn-sm" style={{ fontSize: 11 }} onClick={(eBtn) => { eBtn.stopPropagation(); openMesaEdit(m); }}>✏️ Editar</button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -131,7 +139,7 @@ export default function Mesas() {
             <table>
               <thead><tr>
                 <th>Cliente</th><th>Fecha</th><th>Hora</th><th>Personas</th>
-                <th>Mesa</th><th>Notas</th><th>Acciones</th>
+                <th>Mesa</th><th>Notas</th>{user?.rol !== 'Mozo' && <th>Acciones</th>}
               </tr></thead>
               <tbody>
                 {reservas.map((r) => (
@@ -142,10 +150,12 @@ export default function Mesas() {
                     <td>{r.personas} pax</td>
                     <td>{r.mesa ? `Mesa ${mesas.find((m) => m.id === r.mesa)?.numero ?? r.mesa}` : <span style={{ color: 'var(--text-muted)' }}>Sin asignar</span>}</td>
                     <td style={{ color: 'var(--text-muted)' }}>{r.notas || '—'}</td>
-                    <td><div style={{ display: 'flex', gap: 6 }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => openReservaEdit(r)}><Pencil size={16} /></button>
-                      <button className="btn btn-danger btn-sm" onClick={async () => { await eliminarReserva(r.id); toast('Reserva eliminada', 'info'); }}></button>
-                    </div></td>
+                    {user?.rol !== 'Mozo' && (
+                      <td><div style={{ display: 'flex', gap: 6 }}>
+                        <button className="btn btn-secondary btn-sm" onClick={() => openReservaEdit(r)}><Pencil size={16} /></button>
+                        <button className="btn btn-danger btn-sm" onClick={async () => { await eliminarReserva(r.id); toast('Reserva eliminada', 'info'); }}>🗑️</button>
+                      </div></td>
+                    )}
                   </tr>
                 ))}
               </tbody>

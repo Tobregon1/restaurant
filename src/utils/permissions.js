@@ -3,7 +3,7 @@ export const PERMISSIONS = {
   '/mesas': ['Gerente', 'Mozo', 'Cajero', 'superadmin'],
   '/pedidos': ['Gerente', 'Mozo', 'Cajero', 'Bartender', 'superadmin'],
   '/cocina': ['Gerente', 'Cocinero', 'Bartender', 'superadmin'],
-  '/menu': ['Gerente', 'Mozo', 'Cajero', 'superadmin'],
+  '/menu': ['Gerente', 'Cajero', 'superadmin'],
   '/caja': ['Gerente', 'Cajero', 'superadmin'],
   '/inventario': ['Gerente', 'superadmin'],
   '/empleados': ['Gerente', 'superadmin'],

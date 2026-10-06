@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       if (data.tenant) {
         localStorage.setItem('ros_tenant', JSON.stringify(data.tenant));
       }
-      return { ok: true };
+      return { ok: true, tenant: data.tenant };
     } catch (error) {
       return { ok: false, error: 'Error de red. Asegúrate de que el servidor esté corriendo.' };
     }

@@ -114,6 +114,7 @@ model Pedido {
   telefono    String?
   direccion   String?
   repartidor  String?
+  mozo        String?
   notas       String?
   total       Float    @default(0)
   createdAt   DateTime @default(now())

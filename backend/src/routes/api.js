@@ -93,6 +93,8 @@ const cleanPayload = (body) => {
   delete parsed.id;
   delete parsed.zona;
   delete parsed.imagen;
+  delete parsed.mesaNumero;
+  delete parsed.creadoEn;
   return parsed;
 };
 
@@ -110,7 +112,23 @@ const createCrudRoutes = (entityName, model) => {
       const whereClause = model === 'menuItem' 
         ? { categoria: { tenantId: req.params.tenantId } } 
         : { tenantId: req.params.tenantId };
-      const data = await prisma[model].findMany({ where: whereClause });
+      const includeClause = model === 'pedido' ? { items: { include: { menuItem: true } }, mesa: true } : undefined;
+      const data = await prisma[model].findMany({ where: whereClause, include: includeClause });
+      
+      // format response for frontend
+      if (model === 'pedido') {
+        data.forEach(p => {
+           p.creadoEn = p.createdAt;
+           p.mesaNumero = p.mesa?.numero;
+           p.items = p.items?.map(i => ({
+             itemId: i.menuItemId,
+             nombre: i.menuItem?.nombre,
+             cantidad: i.cantidad,
+             precio: i.precioUnit
+           })) || [];
+        });
+      }
+      
       res.json(data);
     } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
@@ -137,7 +155,34 @@ const createCrudRoutes = (entityName, model) => {
       if (model !== 'menuItem') {
         insertData.tenantId = req.params.tenantId;
       }
-      const data = await prisma[model].create({ data: insertData });
+
+      if (model === 'pedido' && Array.isArray(insertData.items)) {
+        insertData.tipo = insertData.tipo || 'salon';
+        const itemsList = insertData.items;
+        insertData.items = {
+          create: itemsList.map(i => ({
+            menuItemId: i.itemId,
+            cantidad: i.cantidad,
+            precioUnit: i.precio,
+            subtotal: i.precio * i.cantidad
+          }))
+        };
+      }
+
+      const includeClause = model === 'pedido' ? { items: { include: { menuItem: true } }, mesa: true } : undefined;
+      const data = await prisma[model].create({ data: insertData, include: includeClause });
+
+      if (model === 'pedido') {
+        data.creadoEn = data.createdAt;
+        data.mesaNumero = data.mesa?.numero;
+        data.items = data.items?.map(i => ({
+          itemId: i.menuItemId,
+          nombre: i.menuItem?.nombre,
+          cantidad: i.cantidad,
+          precio: i.precioUnit
+        })) || [];
+      }
+
       res.json(data);
     } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
@@ -145,7 +190,19 @@ const createCrudRoutes = (entityName, model) => {
   router.put(`/${entityName}/:tenantId/:id`, async (req, res) => {
     try {
       const parsedBody = cleanPayload(req.body);
-      const data = await prisma[model].update({ where: { id: req.params.id }, data: parsedBody });
+      const includeClause = model === 'pedido' ? { items: { include: { menuItem: true } }, mesa: true } : undefined;
+      const data = await prisma[model].update({ where: { id: req.params.id }, data: parsedBody, include: includeClause });
+      
+      if (model === 'pedido') {
+        data.creadoEn = data.createdAt;
+        data.mesaNumero = data.mesa?.numero;
+        data.items = data.items?.map(i => ({
+          itemId: i.menuItemId,
+          nombre: i.menuItem?.nombre,
+          cantidad: i.cantidad,
+          precio: i.precioUnit
+        })) || [];
+      }
       res.json(data);
     } catch(e) { console.error(e); res.status(500).json({error: e.message}); }
   });
